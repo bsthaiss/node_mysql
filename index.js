@@ -19,8 +19,30 @@ app.use(express.urlencoded({
 app.use(express.json)
 
 // Rotas
-app.get("/", (requisicao, resposta) => {
-    resposta.render("home")
+app.get("/", (request, response) => {
+    response.render("home")
+})
+
+app.get("/register", (request, response) => {
+    response.render("register")
+})
+
+app.post("/register/save", (request, response) => {
+    const { title, pageqty } = request.body // Desestruturação
+
+    const query = `
+    INSERT INTO books (title, pageqty)
+    VALUES ('${title}', '${pageqty}')
+    `
+
+    conn.query(query, (error) => {
+        if (error) {
+            console.log(error)
+            return
+        }
+
+        response.redirect("/")
+    })
 })
 
 // Conexão com o MySQL
