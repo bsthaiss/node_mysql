@@ -16,11 +16,23 @@ app.use(express.urlencoded({
     extended: true
 }))
 
-app.use(express.json)
+// CREATE, READ, UPDATE, DELETE (CRUD)
+
+app.use(express.json())
 
 // Rotas
 app.get("/", (request, response) => {
-    response.render("home")
+    const sql = 'SELECT * FROM books'
+
+    conn.query(sql, (error, data) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        const books = data
+
+        response.render("home", { books })
+    })
 })
 
 app.get("/register", (request, response) => {
@@ -31,8 +43,8 @@ app.post("/register/save", (request, response) => {
     const { title, pageqty } = request.body // Desestruturação
 
     const query = `
-    INSERT INTO books (title, pageqty)
-    VALUES ('${title}', '${pageqty}')
+        INSERT INTO books (title, pageqty)
+        VALUES ('${title}', '${pageqty}')
     `
 
     conn.query(query, (error) => {
