@@ -21,6 +21,23 @@ app.use(express.urlencoded({
 app.use(express.json())
 
 // Rotas
+app.post("/edit/save", (request, response) => {
+    const { id, title, pageqty} = request.body
+
+    const sql = `
+        UPDATE books
+        SET title = '${title}', pageqty = '${pageqty}'
+        WHERE id = ${id}
+    `
+    conn.query(sql, (error) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        response.redirect("/")
+    })
+})
+
 app.get("/", (request, response) => {
     const sql = 'SELECT * FROM books'
 
@@ -54,6 +71,25 @@ app.post("/register/save", (request, response) => {
         }
 
         response.redirect("/")
+    })
+})
+
+app.get("/edit/:id", (request, respose) => {
+    const id = request.params.id
+
+    const sql = `
+        SELECT * FROM books
+        WHERE id=${id}
+    `
+
+    conn.query(sql, (error, data) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        const book = data[0]
+
+        response.render('edit', { book })
     })
 })
 
